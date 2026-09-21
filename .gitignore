@@ -43,3 +43,9 @@ next-env.d.ts
 # embedded PostgreSQL (PGlite) data directory
 /.pglite/
 !.env.example
+
+# local dev server log
+dev.log
+
+# editor/agent tooling
+.claude/

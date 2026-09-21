@@ -1,0 +1,54 @@
+# Runs the dashboard against a real PostgreSQL server.
+#
+#   docker compose up --build          start Postgres and the app
+#   docker compose run --rm seed       load the sample data (once)
+#
+# The app applies schema.sql on boot (DATABASE_AUTO_MIGRATE) and waits for the
+# database's health check before starting.
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: dashboard
+      POSTGRES_PASSWORD: dashboard
+      POSTGRES_DB: dashboard
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dashboard -d dashboard"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      target: runner
+    environment:
+      DATABASE_URL: postgresql://dashboard:dashboard@db:5432/dashboard
+      DATABASE_AUTO_MIGRATE: "true"
+      # Replace before exposing this anywhere: openssl rand -base64 32
+      AUTH_SECRET: change-me-in-production-0123456789abcdef
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # One-shot helper, not part of `docker compose up`.
+  seed:
+    build:
+      context: .
+      target: seeder
+    profiles: ["tools"]
+    environment:
+      DATABASE_URL: postgresql://dashboard:dashboard@db:5432/dashboard
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
