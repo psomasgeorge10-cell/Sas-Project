@@ -49,3 +49,6 @@ dev.log
 
 # editor/agent tooling
 .claude/
+
+# production server log
+prod.log

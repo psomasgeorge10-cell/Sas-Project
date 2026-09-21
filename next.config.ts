@@ -10,9 +10,11 @@ const nextConfig: NextConfig = {
   // Do not emit AGENTS.md / CLAUDE.md into the repository.
   agentRules: false,
 
-  // Emit .next/standalone: a self-contained server with only the traced
-  // dependencies, which is what the Docker image runs.
-  output: "standalone",
+  // The Docker build sets BUILD_STANDALONE=true to emit .next/standalone: a
+  // self-contained server carrying only the modules the app actually reached.
+  // It is opt-in because `next start` does not serve that output - the image
+  // runs `node server.js` directly instead.
+  output: process.env.BUILD_STANDALONE === "true" ? "standalone" : undefined,
 };
 
 export default nextConfig;

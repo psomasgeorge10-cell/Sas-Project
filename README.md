@@ -197,6 +197,11 @@ URL switches the driver to TLS.
 | `npm run db:migrate` | schema only |
 | `npm run db:reset` | wipe and reseed |
 
+> **One caveat with the embedded database:** PGlite holds an exclusive lock on
+> `./.pglite`, so stop the dev server before running `db:seed`, `db:reset` or the
+> tests against it. Two processes writing the same data directory will produce
+> confusing 500s. A real `DATABASE_URL` has no such restriction.
+
 ---
 
 ## Configuration
@@ -233,8 +238,7 @@ npm test
 ## Deployment
 
 **Vercel / any Node host.** Set `DATABASE_URL` and `AUTH_SECRET`, run
-`npm run db:migrate` once, and deploy. `next build` emits `.next/standalone`, a
-self-contained server.
+`npm run db:migrate` once, and deploy.
 
 **Docker.** A multi-stage [`Dockerfile`](Dockerfile) and
 [`docker-compose.yml`](docker-compose.yml) bring up PostgreSQL 16 and the app:
