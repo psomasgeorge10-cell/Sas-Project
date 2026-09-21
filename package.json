@@ -11,7 +11,9 @@
     "db:setup": "tsx scripts/seed.ts",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:seed": "tsx scripts/seed.ts",
-    "db:reset": "tsx scripts/seed.ts --force"
+    "db:reset": "tsx scripts/seed.ts --force",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "test:watch": "node --import tsx --test --watch tests/*.test.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",
